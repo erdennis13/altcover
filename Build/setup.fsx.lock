@@ -91,7 +91,7 @@ NUGET
       System.Reflection.TypeExtensions (>= 4.3)
       System.Runtime.Loader (>= 4.0)
       System.Security.Cryptography.Algorithms (>= 4.3)
-    FSharp.Core (4.3.4)
+    FSharp.Core (4.5)
     FSharpLint.Core (0.9)
       FParsec (>= 1.0.3)
       FSharp.Compiler.Service (>= 17.0.1)
