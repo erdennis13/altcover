@@ -352,8 +352,8 @@ module Runner =
   let WriteResource =
     CommandLine.resources.GetString >> Output.Info
 
-  let WriteResourceWithFormatItems s x =
-    String.Format (CultureInfo.CurrentCulture, s |> CommandLine.resources.GetString, x) |> Output.Info
+  let WriteResourceWithFormatItems s x warn =
+    String.Format (CultureInfo.CurrentCulture, s |> CommandLine.resources.GetString, x) |> (Output.WarnOn warn)
 
   let WriteErrorResourceWithFormatItems s x =
     String.Format (CultureInfo.CurrentCulture, s |> CommandLine.resources.GetString, x) |> Output.Error
@@ -376,10 +376,17 @@ module Runner =
       let formatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter()
       formatter.Binder <- TypeBinder(typeof<(string*int)>)
 
+      let timer = System.Diagnostics.Stopwatch()
+      timer.Start()
+      let mutable before = hits.Count
+      let mutable after = 0
       Directory.GetFiles( Path.GetDirectoryName(report),
                           Path.GetFileName(report) + ".*.acv")
       |> Seq.iter (fun f ->
-          sprintf "... %s" f |> Output.Info
+          timer.Restart()
+          let length = FileInfo(f).Length
+
+          sprintf "... %s (%db)" f length |> Output.Info
           use results = new DeflateStream(File.OpenRead f, CompressionMode.Decompress)
           let rec sink() =
             let hit = try
@@ -397,9 +404,20 @@ module Runner =
               hit |> hits.Add
               sink()
           sink()
+          timer.Stop()
+          after <- hits.Count
+          if after > before then
+            let delta = after - before
+            before <- after
+            let interval = timer.Elapsed
+            let rate = (float delta)/interval.TotalSeconds
+            WriteResourceWithFormatItems "%d visits recorded in %A (%A visits/sec)" [| delta :> obj ; interval; rate |] false
       )
 
-      WriteResourceWithFormatItems "%d visits recorded" [|hits.Count|]
+      timer.Stop()
+
+      let visits = after
+      WriteResourceWithFormatItems "%d visits recorded" [|visits|] (visits = 0)
 
   let internal MonitorBase (hits:ICollection<(string*int*Base.Track)>) report (payload: string list -> int) (args : string list) =
       let result = if collect then 0 else RunProcess report payload args
@@ -633,7 +651,7 @@ module Runner =
             let format' = enum format
 
             let delta = DoReport hits format' report output
-            WriteResourceWithFormatItems "Coverage statistics flushing took {0:N} seconds" [|delta.TotalSeconds|]
+            WriteResourceWithFormatItems "Coverage statistics flushing took {0:N} seconds" [|delta.TotalSeconds|] false
 
             // And tidy up after everything's done
             File.Delete (report + ".acv")

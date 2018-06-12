@@ -20,7 +20,7 @@
     </NuGetPackageImportStamp>
     <ResolveNuGetPackages>false</ResolveNuGetPackages>
     <UseStandardResourceNames>True</UseStandardResourceNames>
-    <Win32Resource>$(ProjectDir)../AltCover/Resource.res</Win32Resource>    
+    <Win32Resource>$(ProjectDir)../AltCover/Resource.res</Win32Resource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -76,10 +76,14 @@
     </Compile>
     <Compile Include="Xml.fs" />
     <Compile Include="CoverageFormats.fs" />
+    <Compile Include="XhtmlReports.fs" />
     <Compile Include="Command.fs" />
     <Content Include="packages.config" />
     <EmbeddedResource Include="xsd\NCover.xsd" />
     <EmbeddedResource Include="xsd\OpenCover.xsd" />
+    <EmbeddedResource Include="xsl\OpenCoverToNCover.xsl" />
+    <EmbeddedResource Include="xsl\OpenCoverToNCoverEx.xsl" />
+    <EmbeddedResource Include="xsl\NCoverToBarChart.xsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AltCover.Recorder\AltCover.Recorder.fsproj">

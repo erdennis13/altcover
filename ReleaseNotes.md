@@ -1,5 +1,24 @@
-# 3.5.5xx (Cerulean series release 1)
-TODO -- fix appveyor.yml in release branch
+# 3.5.530 (Cerulean series release 3)
+* Issue #20 related : `-d|dependency` option for all .net core versions (classic, .dotnet and .global) plus equivalents for pwsh, and MSBuild to allow the user to specify assemblies to satisfy references, anticipating resolution failures
+* Issue #20 related : cache resolution failure fix-ups for some possible performance improvement
+* Issue #20 related : notify the user of assembly resolution fix-up as a build warning
+* minor bugfixes for `ConvertTo-Lcov` and `ConvertTo-Cobertura` for NCover format input
+* minor bugfixes for `ConvertTo-XDocument` and `ConvertTo-XmlDocument` to handle XML processing instructions.
+* Bugfix -- rework `ConvertTo-NCover` so it actually works on PowerShell Core
+* FAKE 5.0 stable now being used
+* Cross-platform unit/operational testing with coverage gathering of cmdlets in the build using Pester
+
+# 3.5.518 (Cerulean series release 2)
+* [BUGFIX] `ConvertTo-NCover` now also outputs to the object pipeline as well as to the optional file (altcover classic .nupkg)
+* [BUGFIX] -- Issue #20 : on assembly resolution failure, look to the nuget package cache for a match (all .nupkg variants)
+
+# 3.5.512 (Cerulean series release 1)
+* Separate NuGet packages altcover.dotnet and altcover.global that contain the command-line tool functionality (only) for .net core as a CLI tool and as a .net core global tool respectively 
+* [BREAKING] `dotnet test` integration - all names have been prefixed with `AltCover` to avoid collisions
+* [BREAKING] `dotnet test` integration - `|` is used as the separator character for lists rather than `;` as the latter causes problems in the command-line context
+* Extended the `ConvertTo-Cobertura` and `ConvertTo-Lcov` cmdlets
+* `ConvertTo-XDocument` and `ConvertTo-XmlDocument` to interconvert in the object pipeline
+* `ConvertTo-NCover` to take OpenCover format to classic NCover
 
 # 3.5.500-pre (Cerulean series pre-release)
 * Reduce the amount of unnecessary infrastructure runtime code in the .nupkg that bloated the 3.0.488-490 release
