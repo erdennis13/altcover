@@ -1071,7 +1071,7 @@
       },
       "AltCover.Recorder.g/2.0.0.0": {
         "dependencies": {
-          "FSharp.Core": "4.3.4"
+          "FSharp.Core": "4.5.0"
         },
         "runtime": {
           "AltCover.Recorder.g.dll": {}

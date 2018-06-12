@@ -9,7 +9,7 @@
       "Sample1/1.0.0": {
         "dependencies": {
           "AltCover.Recorder.g": "1.4.0.0",
-          "FSharp.Core": "4.3.4"
+          "FSharp.Core": "4.5.0"
         },
         "runtime": {
           "Sample1.dll": {}
@@ -17,15 +17,18 @@
       },
       "AltCover.Recorder.g/1.4.0.0": {
         "dependencies": {
-          "FSharp.Core": "4.3.4"
+          "FSharp.Core": "4.5.0"
         },
         "runtime": {
           "AltCover.Recorder.g.dll": {}
         }
       },
-      "FSharp.Core/4.3.4": {
+      "FSharp.Core/4.5.0": {
         "runtime": {
-          "lib/netstandard1.6/FSharp.Core.dll": {}
+          "lib/netstandard1.6/FSharp.Core.dll": {
+            "assemblyVersion": "4.5.0.0",
+            "fileVersion": "2018.6.5.4"
+          }
         }
       }
     }
@@ -36,12 +39,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "FSharp.Core/4.3.4": {
+    "FSharp.Core/4.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-u2UeaUl1pt/Lktdpzq3AsaRmOV1mOiQaSbZgYqQQYuqBSjnILWemetff4xMZIAZi0241jlIkcrJQsU5PlLwIJA==",
-      "path": "fsharp.core/4.3.4",
-      "hashPath": "fsharp.core.4.3.4.nupkg.sha512"
+      "sha512": "sha512-uTxylzhk+Qi3uT/kSB33jC/AY1se99vxg7opq6UFZiBL9l1RDNAeXLMFew5+HavGVPsMZtYy5P3QTsaFTCaFjQ==",
+      "path": "fsharp.core/4.5.0",
+      "hashPath": "fsharp.core.4.5.0.nupkg.sha512"
     },
     "Sample1/1.0.0": {
       "type": "project",
