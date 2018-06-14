@@ -418,7 +418,7 @@ module Visitor =
                 else accumulate state.Next gendarme
     accumulate i [i]
 
-  let private boundaryOfList (f: (Instruction->int) -> Instruction list -> Instruction) 
+  let private boundaryOfList (f: (Instruction->int) -> Instruction list -> Instruction)
                              (places:Instruction list) =
     places |> f (fun i -> i.Offset)
 
@@ -559,13 +559,13 @@ module Visitor =
     visitors |>
     List.map (invoke node)
 
-  let internal Visit (visitors : list<Fix<Node>>) (assemblies : seq<string>) =
+  let internal Visit (visitors : seq<Fix<Node>>) (assemblies : seq<string>) =
     ZeroPoints()
     MethodNumber <- 0
     try
         Start assemblies
         |> BuildSequence
-        |> Seq.fold apply visitors
+        |> Seq.fold apply (visitors |> Seq.toList)
         |> ignore
     finally
       accumulator

@@ -1428,7 +1428,7 @@ _Target "WindowsPowerShell" (fun _ ->
   Actions.RunRaw (fun info -> { info with
                                         FileName = "powershell.exe"
                                         WorkingDirectory = "."
-                                        Arguments = (" ./Build/powershell.ps1")})
+                                        Arguments = ("-NoProfile ./Build/powershell.ps1")})
                                  "powershell"
 )
 
@@ -1450,7 +1450,7 @@ _Target "Pester" (fun _ ->
   Actions.RunRaw (fun info -> { info with
                                         FileName = pwsh
                                         WorkingDirectory = "."
-                                        Arguments = (" ./Build/pester.ps1")})
+                                        Arguments = ("-NoProfile ./Build/pester.ps1")})
                                  "pwsh"
 
   Actions.RunDotnet (fun o -> {dotnetOptions o with WorkingDirectory = unpack}) ""
@@ -2404,9 +2404,18 @@ Target.activateFinal "ResetConsoleColours"
 ==> "Pester"
 ==> "UnitTestWithAltCoverRunner"
 
+"WindowsPowerShell"
+=?> ("Pester", Environment.isWindows)
+
 "Unpack"
 ==> "WindowsPowerShell"
 =?> ("Deployment", Environment.isWindows)
+
+"ReleaseXUnitFSharpTypesDotNetRunner"
+=?> ("WindowsPowerShell", Environment.isWindows)
+
+"ReleaseXUnitFSharpTypesDotNetRunner"
+==> "Pester"
 
 "Unpack"
 ==> "SimpleReleaseTest"
