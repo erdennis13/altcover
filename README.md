@@ -1,3 +1,5 @@
+**Expect slower releases for the Summer**
+
 # altcover
 Instrumenting coverage tool for .net (framework 2.0+  and core) and Mono, reimplemented and extended almost beyond recognition from [dot-net-coverage](https://github.com/SteveGilham/dot-net-coverage), plus a set of related utilities for processing the results from this and from other programs producing similar output formats.
 
@@ -37,21 +39,32 @@ Fast forwards to autumn 2017, and I get the chance to dust the project off, with
 
 ## Usage
 
-See the [Wiki page]( https://github.com/SteveGilham/altcover/wiki/Usage) for details
+See the [Wiki page](https://github.com/SteveGilham/altcover/wiki/Usage) for details
+
+## Roadmap
+
+See the [current project](https://github.com/SteveGilham/altcover/projects/6) for details
 
 ## Building
 
 ### Tooling
 
+#### All platforms
+
+It is assumed that the following are available
+
+.net core SDK 2.1.300 or later (`dotnet`) -- try https://www.microsoft.com/net/download  
+PowerShell Core 6.0.2 or later (`pwsh`) -- try https://github.com/powershell/powershell
+
 #### Windows
 
-You will need Visual Studio VS2017 (Community Edition) v15.7.latest with F# language support (or just the associated build tools and your editor of choice) with .net core SDK 2.1.300 or later.  The NUnit3 Test Runner will simplify the basic in-IDE development cycle.  Note that some of the unit tests expect that the separate build of test assemblies under Mono, full .net framework and .net core has taken place; there will be up to 20 failures when running the unit tests in Visual Studio from clean when those expected assemblies are not found.
+You will need Visual Studio VS2017 (Community Edition) v15.7.latest with F# language support (or just the associated build tools and your editor of choice).  The NUnit3 Test Runner will simplify the basic in-IDE development cycle.  Note that some of the unit tests expect that the separate build of test assemblies under Mono, full .net framework and .net core has taken place; there will be up to 20 failures when running the unit tests in Visual Studio from clean when those expected assemblies are not found.
 
 For the .net 2.0 support, if you don't already have FSharp.Core.dll version 2.3.0.0 (usually in Reference Assemblies\Microsoft\FSharp\.NETFramework\v2.0\2.3.0.0), then you will need to install this -- the [Visual F# Tools 4.0 RTM](https://www.microsoft.com/en-us/download/details.aspx?id=48179) `FSharp_Bundle.exe` is the most convenient source. 
 
 #### *nix
 
-It is assumed that `mono` (version 5.12.x) and `dotnet` (SDK v2.1.300 or later) are on the `PATH` already, and everything is built from the command line, with your favourite editor used for coding.
+It is assumed that `mono` (version 5.12.x) and `dotnet` are on the `PATH` already, and everything is built from the command line, with your favourite editor used for coding.
 
 ### Bootstrapping
 

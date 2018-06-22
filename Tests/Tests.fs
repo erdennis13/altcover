@@ -1765,7 +1765,7 @@ type AltCoverTests() = class
     let token0 = def.Name.PublicKeyToken
     Assert.That (token0, Is.Not.Empty)
 #endif
-    AltCover.Instrument.UpdateStrongNaming def.Name None
+    AltCover.Instrument.UpdateStrongNaming def None
     Assert.That (def.Name.HasPublicKey, Is.False)
     let key1 = def.Name.PublicKey
     Assert.That (key1, Is.Empty)
@@ -1798,7 +1798,7 @@ type AltCoverTests() = class
     stream.CopyTo(buffer)
     let key = StrongNameKeyPair(buffer.ToArray())
 
-    AltCover.Instrument.UpdateStrongNaming def.Name (Some key)
+    AltCover.Instrument.UpdateStrongNaming def (Some key)
 #if NETCOREAPP2_0
     Assert.That (def.Name.HasPublicKey, Is.False)
 #else
@@ -1870,7 +1870,7 @@ type AltCoverTests() = class
       let where = Assembly.GetExecutingAssembly().Location
       let path = Path.Combine(Path.GetDirectoryName(where) + AltCoverTests.Hack(), "Sample3.dll")
       let def = Mono.Cecil.AssemblyDefinition.ReadAssembly path
-      AltCover.Instrument.UpdateStrongNaming def.Name None
+      AltCover.Instrument.UpdateStrongNaming def None
       self.ProvideKeyPair() |> Visitor.Add
       Assert.That (Option.isNone(Instrument.KnownKey def.Name))
     finally
@@ -1910,7 +1910,7 @@ type AltCoverTests() = class
       let where = Assembly.GetExecutingAssembly().Location
       let path = Path.Combine(Path.GetDirectoryName(where) + AltCoverTests.Hack(), "Sample3.dll")
       let def = Mono.Cecil.AssemblyDefinition.ReadAssembly path
-      AltCover.Instrument.UpdateStrongNaming def.Name None
+      AltCover.Instrument.UpdateStrongNaming def None
       self.ProvideKeyPair() |> Visitor.Add
       Assert.That (Option.isNone(Instrument.KnownToken def.Name))
     finally
@@ -2721,10 +2721,10 @@ type AltCoverTests() = class
 
     Instrument.UpdateStrongReferences def
     let token1 = def.Name.PublicKeyToken
-    Assert.That (token1, Is.Not.Null)
 #if NETCOREAPP2_0
-    Assert.That (token1, Is.EquivalentTo(token0))
+    Assert.That (token1, Is.Empty)
 #else
+    Assert.That (token1, Is.Not.Null)
     Assert.That (token1, Is.Not.EquivalentTo(token0))
 #endif
     let token' = String.Join(String.Empty, token1|> Seq.map (fun x -> x.ToString("x2")))
@@ -2747,11 +2747,7 @@ type AltCoverTests() = class
     Instrument.UpdateStrongReferences def
     let token1 = def.Name.PublicKeyToken
     Assert.That (token1, Is.Empty)
-#if NETCOREAPP2_0
-    Assert.That (token1, Is.EquivalentTo(token0))
-#else
     Assert.That (token1, Is.Not.EquivalentTo(token0))
-#endif
 
     let token' = String.Join(String.Empty, token1|> Seq.map (fun x -> x.ToString("x2")))
     Assert.That (token', Is.EqualTo String.Empty)
@@ -4569,6 +4565,29 @@ type AltCoverTests() = class
       Console.SetError (snd saved)
 
   [<Test>]
+  member self.IpmoIsAsExpected() =
+    AltCover.ToConsole()
+    let saved = Console.Out
+    try
+      use stdout = new StringWriter()
+      Console.SetOut stdout
+      Output.Task <- true
+      let rc = AltCover.Main.EffectiveMain [| "i" |]
+      Assert.That (rc, Is.EqualTo 0)
+      let result = stdout.ToString().Replace("\r\n", "\n")
+      let expected = "Import-Module \"" +
+                     Path.Combine ( Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName,
+                                    "AltCover.PowerShell.dll") +
+                     """"
+"""
+
+      Assert.That (result.Replace("\r\n", "\n"), Is.EqualTo (expected.Replace("\r\n", "\n")))
+
+    finally 
+      Console.SetOut saved
+      Output.Task <- false
+
+  [<Test>]
   member self.UsageIsAsExpected() =
     let options = Main.DeclareOptions ()
     let saved = Console.Error
@@ -4643,6 +4662,9 @@ type AltCoverTests() = class
       --save                 Optional: Write raw coverage data to file for
                                later processing
   -?, --help, -h             Prints out the options.
+or
+  ipmo                       Prints out the PowerShell script to import the
+                               associated PowerShell module
 """
 
       Assert.That (result.Replace("\r\n", "\n"), Is.EqualTo (expected.Replace("\r\n", "\n")))
@@ -4776,6 +4798,7 @@ or
       Main.EffectiveMain <- save
       Output.Info <- fst saved
       Output.Error <- snd saved
+      Output.Task <- false
 
   [<Test>]
   member self.NonDefaultInstrumentIsOK() =
@@ -4807,6 +4830,7 @@ or
       Main.EffectiveMain <- save
       Output.Info <- fst saved
       Output.Error <- snd saved
+      Output.Task <- false
 
   [<Test>]
   member self.EmptyCollectIsJustTheDefaults() =
@@ -4825,6 +4849,7 @@ or
       Main.EffectiveMain <- save
       Output.Info <- fst saved
       Output.Error <- snd saved
+      Output.Task <- false
 
   [<Test>]
   member self.CollectWithExeIsNotCollecting() =
@@ -4849,6 +4874,26 @@ or
       Main.EffectiveMain <- save
       Output.Info <- fst saved
       Output.Error <- snd saved
+      Output.Task <- false
 
+  [<Test>]
+  member self.EmptyPowerShellIsJustTheDefaults() =
+    let subject = PowerShell()
+    let save = Main.EffectiveMain
+    let mutable args = [| "some junk "|]
+    let saved = (Output.Info, Output.Error)
+    try
+        Main.EffectiveMain <- (fun a -> args <- a
+                                        255)
+        let result = subject.Execute()
+        Assert.That(result, Is.False)
+        Assert.That(args, Is.EquivalentTo ["ipmo"])
+        Assert.Throws<InvalidOperationException>(fun () -> Output.Warn "x") |> ignore
+        Assert.Throws<InvalidOperationException>(fun () -> Output.Error "x") |> ignore
+    finally
+      Main.EffectiveMain <- save
+      Output.Info <- fst saved
+      Output.Error <- snd saved
+      Output.Task <- false
   // Recorder.fs => Shadow.Tests
 end
